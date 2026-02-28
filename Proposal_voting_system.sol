@@ -40,7 +40,7 @@ contract ProposalContract {
     mapping(uint256 => Proposal) proposal_history;
 
     
-    // Check if voter has voted on proposal already
+    // Array to check if voter has voted on proposal already
     address [] private voted_addresses;
 
     // set the owner as contract deployer
@@ -94,7 +94,7 @@ contract ProposalContract {
         uint256 pass = proposal.pass;
 
         // Calculate total vote to implement function to approve proposal if >= 51% of the vote
-        uint256 total_vote = proposal.approve + proposal.reject + proposal.pass;
+        uint256 total_vote = approve + reject + pass;
 
         if (approve * 100 >= total_vote * 51) {
             return true;
@@ -138,7 +138,37 @@ contract ProposalContract {
     
     }
 
+    // Function to terminate proposal
+    function terminateProposal() external onlyOwner active {
+        proposal_history[counter].is_active = false;
+    }
 
+
+    // ******* Query Functions *******
+
+    
+    // Query whether a given address has voted
+    function isVoted(address _address) public view returns(bool) {
+        for (uint i = 0; i < voted_addresses.length; i++) {
+            if (voted_addresses[i] == _address) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    // Retrieve current proposals
+    function getCurrentProposal() external view returns(Proposal memory) {
+        return proposal_history[counter];
+    }
+
+
+    // Retrieve a specific proposal
+    function getProposal(uint256 number) external view returns(Proposal memory) {
+        return proposal_history[number];
+    }
 
 
 }
